@@ -13,6 +13,9 @@ public class Player : MonoBehaviour
     [SerializeField]
     float pickup_radius;
 
+    [SerializeField]
+    float ground_offset;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -21,8 +24,56 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        Vector3 movement = Input.GetAxis("Horizontal") * Vector3.right + Input.GetAxis("Vertical") * Vector3.forward;
-        controller.SimpleMove(speed * movement);
+        Vector3 movement = Input.GetAxisRaw("Horizontal") * Vector3.right + Input.GetAxisRaw("Vertical") * Vector3.forward;
+
+        if (movement.magnitude > 0.0f)
+        {
+            transform.rotation = Quaternion.LookRotation(movement);
+        }
+
+        Vector3 delta = speed * movement * Time.deltaTime;
+
+
+        /*
+        bool cancel_movement = false;
+
+        // detect water
+        if (Physics.Raycast(transform.position + delta, Vector3.down, Mathf.Infinity, LayerMask.GetMask("Water")))
+        {
+            float rotation = 90.0f;
+            Vector3 sample1 = Quaternion.AngleAxis(rotation, Vector3.up) * delta;
+            Vector3 sample2 = Quaternion.AngleAxis(-rotation, Vector3.up) * delta;
+
+            float rotation_delta = 0.0f;
+            if (Physics.Raycast(transform.position + sample1, Vector3.down, Mathf.Infinity, LayerMask.GetMask("Water")))
+            {
+
+            }
+            else if (Physics.Raycast(transform.position + sample2, Vector3.down, Mathf.Infinity, LayerMask.GetMask("Water")))
+            {
+                
+            }
+            else
+            {
+                cancel_movement = true;
+            }
+
+
+            while (Physics.Raycast(transform.position + delta, Vector3.down, Mathf.Infinity, LayerMask.GetMask("Water")))
+            {
+
+            }
+        }
+        */
+
+        controller.Move(delta);
+
+        // snap to ground
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity, LayerMask.GetMask("Environment")))
+        {
+            transform.position += (hit.distance - ground_offset) * Vector3.down;
+        }
 
 
         if (Input.GetMouseButtonDown(0))

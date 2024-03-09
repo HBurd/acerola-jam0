@@ -22,7 +22,7 @@ public class Organism : MonoBehaviour
 
     void Start()
     {
-        Singleton.Get<Animals>().RegisterAnimal(gameObject, organism_type);
+        //Singleton.Get<Animals>().RegisterAnimal(gameObject, organism_type);
     }
 
 
