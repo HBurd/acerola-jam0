@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         Vector3 movement = Input.GetAxisRaw("Horizontal") * Vector3.right + Input.GetAxisRaw("Vertical") * Vector3.forward;
+        movement.Normalize();
 
         if (movement.magnitude > 0.0f)
         {

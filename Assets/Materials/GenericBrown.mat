@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TreeTrunk
-  m_Shader: {fileID: -6465566751694194690, guid: a3c5b8d284a98084a964df24f7972440,
+  m_Name: GenericBrown
+  m_Shader: {fileID: -6465566751694194690, guid: 13471d9ea1c29db408642326047a2e2f,
     type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -107,8 +107,6 @@ Material:
     - _Surface: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - _metallic: 0
-    - _smoothness: 0
     - fold_factor: 0.01
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

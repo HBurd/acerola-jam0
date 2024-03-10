@@ -7,6 +7,9 @@ public class DisableCull : MonoBehaviour
     void Start()
     {
         Mesh mesh = GetComponent<MeshFilter>().mesh;
-        mesh.bounds = new Bounds(mesh.bounds.center, 10000.0f * Vector3.one);
+        // This is definitely wrong (up is a direction) but it works??
+        Vector3 up = transform.InverseTransformPoint(Vector3.up);
+        mesh.bounds = new Bounds(mesh.bounds.center, mesh.bounds.size + up * 15.0f);
+        Destroy(this);
     }
 }
