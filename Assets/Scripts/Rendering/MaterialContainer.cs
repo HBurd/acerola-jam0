@@ -23,4 +23,10 @@ public class MaterialContainer : MonoBehaviour
         Destroy(renderer.material);
         renderer.material = opaque;
     }
+
+    public void SetTransparency(float transparency)
+    {
+        Renderer renderer = GetComponent<Renderer>();
+        renderer.material.SetFloat("_transparency", transparency);
+    }
 }
