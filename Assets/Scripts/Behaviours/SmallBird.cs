@@ -38,6 +38,9 @@ public class SmallBird : MonoBehaviour
     [SerializeField]
     float poop_drop_chance;
 
+    [SerializeField]
+    float jump_strength;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -45,6 +48,17 @@ public class SmallBird : MonoBehaviour
 
     void Update()
     {
+        if (rb.velocity.x > 0.01f)
+        {
+            GetComponent<Renderer>().material.SetFloat("_xscale", -1.0f);
+        }
+        else if (rb.velocity.x < -0.01f)
+        {
+            GetComponent<Renderer>().material.SetFloat("_xscale", 1.0f);
+        }
+
+        GetComponent<SpriteAnimator>().SetAnim(rb.velocity.magnitude > 0.01f ? 1 : 0);
+
         if (Time.timeAsDouble > next_event_time)
         {
             double event_delta = jump_interval;
@@ -86,7 +100,7 @@ public class SmallBird : MonoBehaviour
                     }
                     
 
-                    rb.AddForce(Vector3.up + jump_dir, ForceMode.Impulse);
+                    rb.AddForce(Vector3.up * jump_strength + jump_dir, ForceMode.Impulse);
                 }
             }
             else
@@ -147,11 +161,11 @@ public class SmallBird : MonoBehaviour
         float drop_test = Random.Range(0.0f, 1.0f);
         if (drop_test < feather_drop_chance)
         {
-            Instantiate(feather, transform.position, Quaternion.identity);
+            //Instantiate(feather, transform.position, Quaternion.identity);
         }
         else if (drop_test < poop_drop_chance)
         {
-            Instantiate(poop, transform.position, Quaternion.identity);
+            //Instantiate(poop, transform.position, Quaternion.identity);
         }
 
         next_event_time = Time.timeAsDouble + fly_time;

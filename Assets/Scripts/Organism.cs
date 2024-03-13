@@ -10,6 +10,7 @@ public enum OrganismType
     Butterfly,
     Deer,
     Jaguar,
+    Alien,
 }
 
 public class Organism : MonoBehaviour
@@ -47,6 +48,8 @@ public class Organism : MonoBehaviour
                 return "Deer";
             case OrganismType.Jaguar:
                 return "Jaguar";
+            case OrganismType.Alien:
+                return "Alien";
         }
 
         return "INVALID";

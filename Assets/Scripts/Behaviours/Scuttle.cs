@@ -63,6 +63,7 @@ public class Scuttle : MonoBehaviour
 
     void Update()
     {
+        // Gravity if not grounded, otherwise friction
         if (!controller.isGrounded)
         {
             velocity += Physics.gravity * Time.deltaTime;
@@ -81,6 +82,15 @@ public class Scuttle : MonoBehaviour
             }
         }
 
+        if (velocity.x > 0.01f)
+        {
+            GetComponent<Renderer>().material.SetFloat("_xscale", -1.0f);
+        }
+        else if (velocity.x < -0.01f)
+        {
+            GetComponent<Renderer>().material.SetFloat("_xscale", 1.0f);
+        }
+
         if (flee)
         {
             float y_velocity = velocity.y;
@@ -90,7 +100,7 @@ public class Scuttle : MonoBehaviour
 
             Vector3 ortho = new Vector3(-flee_dir.z, flee_dir.y, flee_dir.x);
 
-            velocity = flee_dir * flee_speed + ortho * flee_wiggle * flee_speed * sin_t + Vector3.up * y_velocity;
+            velocity = flee_speed * (flee_dir + ortho * flee_wiggle * sin_t).normalized + Vector3.up * y_velocity;
 
 
             if (Time.timeAsDouble > flee_end_time)
@@ -151,7 +161,7 @@ public class Scuttle : MonoBehaviour
         {
             controller.Move(velocity * Time.deltaTime);
         }
-        else
+        else if (destroy_after_flee)
         {
             // We want to clip into ground after fleeing
             transform.position += velocity * Time.deltaTime;
@@ -161,6 +171,7 @@ public class Scuttle : MonoBehaviour
     void Flee(Vector3 danger_pos)
     {
         flee_dir = transform.position - danger_pos;
+        flee_dir.y = 0.0f;
         flee_dir.Normalize();
         flee = true;
 
