@@ -139,6 +139,8 @@ public class Scuttle : MonoBehaviour
 
             if (Time.timeAsDouble > next_movement_time && !flee)
             {
+                GetComponent<AudioSource>().pitch = Random.Range(0.8f, 1.3f);
+                GetComponent<AudioSource>().Play();
                 if (Random.Range(0.0f, 1.0f) < subsequent_move_chance)
                 {
                     next_movement_time = Time.timeAsDouble + subsequent_move_time;

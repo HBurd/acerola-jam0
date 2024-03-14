@@ -68,6 +68,9 @@ public class SmallBird : MonoBehaviour
                 
                 if (should_jump)
                 {
+                    GetComponent<AudioSource>().pitch = Random.Range(0.8f, 1.3f);
+                    GetComponent<AudioSource>().Play();
+
                     Vector3 jump_dir;
                     if ((transform.position - flock.GetCenter()).magnitude > 1.3f * flock.GetSpawnRadius())
                     {

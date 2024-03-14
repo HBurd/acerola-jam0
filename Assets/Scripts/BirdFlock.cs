@@ -25,7 +25,24 @@ public class BirdFlock : MonoBehaviour
     [SerializeField]
     List<OrganismType> danger_types;
 
+    [SerializeField]
+    bool autospawn = false;
+
+    public void SetBirdCount(int size)
+    {
+        flock_size = size;
+    }
+
     void Start()
+    {
+        if (autospawn)
+        {
+            Spawn();
+        }
+
+    }
+
+    public void Spawn()
     {
         birds = new SmallBird[flock_size];
         for (int i = 0; i < flock_size; ++i)

@@ -8,11 +8,8 @@ public class RandomTree : MonoBehaviour
     void Start()
     {
         GetComponent<Transform>().rotation = Quaternion.AngleAxis(Random.Range(0.0f, 360.0f), Vector3.up) * GetComponent<Transform>().rotation;
-    }
+        //transform.localScale = Vector3.one * Random.Range(0.7f, 1.0f);
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        Destroy(this);
     }
 }

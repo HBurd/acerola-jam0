@@ -16,6 +16,29 @@ public class Player : MonoBehaviour
     [SerializeField]
     float ground_offset;
 
+    [SerializeField]
+    Net net;
+
+    [SerializeField]
+    double spawn_interval;
+
+    double next_spawn_time;
+
+    [SerializeField]
+    float spawn_radius;
+
+    [SerializeField]
+    int carrying_capacity;
+
+    [SerializeField]
+    float alien_chance = 0.01f;
+
+    [SerializeField]
+    GameObject alien;
+
+    [SerializeField]
+    GameObject bird_flock_spawner;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -32,40 +55,7 @@ public class Player : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(movement);
         }
 
-        Vector3 delta = speed * movement * Time.deltaTime;
-
-
-        /*
-        bool cancel_movement = false;
-
-        // detect water
-        if (Physics.Raycast(transform.position + delta, Vector3.down, Mathf.Infinity, LayerMask.GetMask("Water")))
-        {
-            float rotation = 90.0f;
-            Vector3 sample1 = Quaternion.AngleAxis(rotation, Vector3.up) * delta;
-            Vector3 sample2 = Quaternion.AngleAxis(-rotation, Vector3.up) * delta;
-
-            float rotation_delta = 0.0f;
-            if (Physics.Raycast(transform.position + sample1, Vector3.down, Mathf.Infinity, LayerMask.GetMask("Water")))
-            {
-
-            }
-            else if (Physics.Raycast(transform.position + sample2, Vector3.down, Mathf.Infinity, LayerMask.GetMask("Water")))
-            {
-                
-            }
-            else
-            {
-                cancel_movement = true;
-            }
-
-
-            while (Physics.Raycast(transform.position + delta, Vector3.down, Mathf.Infinity, LayerMask.GetMask("Water")))
-            {
-
-            }
-        }
-        */
+        Vector3 delta = net.SpeedModifier() * speed * movement * Time.deltaTime;
 
         controller.Move(delta);
 
@@ -106,6 +96,84 @@ public class Player : MonoBehaviour
                 notebook.StoreSample(pickup.GetSourceOrganism(), pickup.GetItemType());
                 Destroy(pickup.gameObject);
             }
+        }
+
+
+
+        if (Time.timeAsDouble > next_spawn_time)
+        {
+            next_spawn_time = Time.timeAsDouble + spawn_interval;
+
+            int nearby = 0;
+
+            Collider[] nearby_organisms = Physics.OverlapSphere(transform.position, 2.0f * spawn_radius, LayerMask.GetMask("Organism"));
+            foreach (Collider collider in nearby_organisms)
+            {
+                if (collider.GetComponent<Organism>())
+                {
+                    nearby += 1;
+                }
+            }
+
+            if (nearby <= carrying_capacity)
+            {
+                SpawnOrganisms(carrying_capacity - nearby);
+            }
+        }
+    }
+
+
+    void SpawnOrganisms(int count)
+    {
+        int birds_to_spawn = (int)(count * Mathf.Clamp(Random.Range(1.0f - alien_chance - 0.1f, 1.0f - alien_chance + 0.1f), 0.0f, 1.0f));
+        int aliens_to_spawn = count - birds_to_spawn;
+
+        Debug.Log(count + ", " + birds_to_spawn + ", " + aliens_to_spawn);
+
+        int flocks_to_spawn = birds_to_spawn > 0 ? Random.Range(1, 3) : 0;
+
+        for (int i = 0; i < aliens_to_spawn; ++i)
+        {
+            float random_angle = Random.Range(0.0f, 2.0f * Mathf.PI);
+            Vector3 random_dir = Vector3.right * Mathf.Cos(random_angle) + Vector3.forward * Mathf.Sin(random_angle);
+            Vector3 spawn_pos = transform.position + random_dir * Random.Range(spawn_radius, 2.0f * spawn_radius);
+            if (!Physics.Raycast(spawn_pos, Vector3.down, transform.position.y * 0.9f, LayerMask.GetMask("Environment")))
+            {
+                continue;
+            }
+            Instantiate(alien, spawn_pos, Quaternion.identity);
+        }
+
+        for (int i = 0; i < flocks_to_spawn - 1; ++i)
+        {
+            int birds_in_flock = (int)(birds_to_spawn * Random.Range(0.25f * birds_to_spawn, 0.75f * birds_to_spawn));
+            birds_in_flock = Mathf.Min(birds_in_flock, birds_to_spawn);
+            birds_to_spawn -= birds_in_flock;
+
+
+            float random_angle = Random.Range(0.0f, 2.0f * Mathf.PI);
+            Vector3 random_dir = Vector3.right * Mathf.Cos(random_angle) + Vector3.forward * Mathf.Sin(random_angle);
+            Vector3 spawn_pos = transform.position + random_dir * Random.Range(spawn_radius, 2.0f * spawn_radius);
+            if (!Physics.Raycast(spawn_pos, Vector3.down, transform.position.y * 0.9f, LayerMask.GetMask("Environment")))
+            {
+                continue;
+            }
+            BirdFlock flock = Instantiate(bird_flock_spawner, spawn_pos, Quaternion.identity).GetComponent<BirdFlock>();
+            flock.SetBirdCount(birds_in_flock);
+            flock.Spawn();
+        }
+
+        {
+            float random_angle = Random.Range(0.0f, 2.0f * Mathf.PI);
+            Vector3 random_dir = Vector3.right * Mathf.Cos(random_angle) + Vector3.forward * Mathf.Sin(random_angle);
+            Vector3 spawn_pos = transform.position + random_dir * Random.Range(spawn_radius, 2.0f * spawn_radius);
+            if (!Physics.Raycast(spawn_pos, Vector3.down, transform.position.y * 0.9f, LayerMask.GetMask("Environment")))
+            {
+                return;
+            }
+            BirdFlock flock = Instantiate(bird_flock_spawner, spawn_pos, Quaternion.identity).GetComponent<BirdFlock>();
+            flock.SetBirdCount(birds_to_spawn);
+            flock.Spawn();
         }
     }
 }
