@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Net : MonoBehaviour
@@ -22,9 +23,16 @@ public class Net : MonoBehaviour
 
     double swing_start_time;
 
+    [SerializeField]
+    TMP_Text counter_text;
+
+    int aliens_caught = 0;
+
     void Start()
     {
         initial_rotation = transform.rotation;
+
+        counter_text.text = "0 aberrations caught";
     }
 
     void Update()
@@ -88,6 +96,8 @@ public class Net : MonoBehaviour
             if (organism?.GetOrganismType() == OrganismType.Alien)
             {
                 Destroy(collider.gameObject);
+                aliens_caught += 1;
+                counter_text.text = aliens_caught.ToString() + " aberrations caught";
                 return true;
             }
         }
@@ -109,5 +119,10 @@ public class Net : MonoBehaviour
         {
             return 1.0f;
         }
+    }
+
+    public int GetAliens()
+    {
+        return aliens_caught;
     }
 }

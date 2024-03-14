@@ -48,4 +48,5 @@ MonoBehaviour:
   flock_size: 20
   spawn_radius: 10
   hazard_threshold: 10
-  danger_types: 00000000020000000400000005000000
+  danger_types: 0000000002000000040000000500000006000000
+  autospawn: 0
